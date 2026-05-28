@@ -2304,6 +2304,14 @@ async function processUploadFile(file){
       throw new Error('Could not extract text from this file. Try a text-based PDF or paste as TXT.');
     }
 
+    // Sanitize — remove control characters that break JSON parsing
+    resumeText = resumeText
+      .replace(/[\x00-\x08\x0B\x0C\x0E-\x1F\x7F]/g, ' ')
+      .replace(/\r\n/g, '\n')
+      .replace(/\r/g, '\n')
+      .replace(/ {3,}/g, '  ')
+      .trim();
+
     // Truncate to ~6000 chars to stay within token limits
     if(resumeText.length > 6000) resumeText = resumeText.slice(0, 6000) + '...';
 
