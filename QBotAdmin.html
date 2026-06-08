@@ -184,13 +184,14 @@ textarea.form-input{resize:vertical;}
 .empty-state-text{font-size:14px;}
 
 /* LOG ENTRY */
-.log-entry{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-bottom:1px solid var(--border);transition:background .15s;}
+.log-entry{display:flex;align-items:flex-start;gap:10px;padding:12px 16px;border-bottom:1px solid var(--border);transition:background .15s;}
 .log-entry:hover{background:var(--bg3);}
 .log-entry:last-child{border-bottom:none;}
-.log-time{font-family:'Courier New',Courier,monospace;font-size:11px;color:var(--text3);white-space:nowrap;padding-top:2px;}
+.log-time{font-family:'Courier New',Courier,monospace;font-size:11px;color:var(--text3);white-space:nowrap;padding-top:2px;min-width:70px;}
 .log-phone{font-family:'Courier New',Courier,monospace;font-size:12px;color:var(--accent);margin-bottom:2px;}
-.log-msg{font-size:13px;color:var(--text2);line-height:1.5;}
-.log-reply{font-size:12px;color:var(--text3);margin-top:4px;font-style:italic;}
+.log-msg{font-size:13px;color:var(--text2);line-height:1.5;word-break:break-word;white-space:pre-wrap;}
+.log-reply{font-size:12px;color:var(--text3);margin-top:4px;font-style:italic;word-break:break-word;white-space:pre-wrap;}
+.log-date-group{padding:8px 16px;background:var(--bg4);font-size:11px;font-weight:700;color:var(--text3);letter-spacing:1px;text-transform:uppercase;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:1;}
 
 /* BOT CARD */
 .bot-card{background:var(--bg2);border:1px solid var(--border);border-radius:16px;padding:20px 24px;display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;transition:all .2s;box-shadow:var(--card-shadow);}
@@ -404,7 +405,7 @@ textarea.form-input{resize:vertical;}
         <svg width="18" height="18" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="10" rx="2"/><circle cx="12" cy="5" r="2"/><path d="M12 7v4"/><path d="M8 15v.01M12 15v.01M16 15v.01"/></svg>
       </div>
       <div>
-        <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:800;font-size:16px;">WaBotMY</div>
+        <div style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;font-weight:800;font-size:16px;">QBOTMY</div>
         <div style="font-size:10px;color:var(--text3);font-family:'Courier New',Courier,monospace;letter-spacing:.5px;">ADMIN PANEL</div>
       </div>
     </div>
@@ -476,7 +477,7 @@ textarea.form-input{resize:vertical;}
           <svg width="20" height="20" fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#ic-bot"/></svg>
         </div>
         <div>
-          <div class="logo-text">WaBotMY</div>
+          <div class="logo-text">QBOTMY</div>
           <div class="logo-sub">ADMIN PANEL</div>
         </div>
       </div>
@@ -788,7 +789,7 @@ textarea.form-input{resize:vertical;}
         </button>
       </div>
       <div class="card">
-        <div class="card-body" id="messages-list"><div style="padding:32px;text-align:center;color:var(--text3)">Loading...</div></div>
+        <div id="messages-list" style="max-height:70vh;overflow-y:auto;border-radius:inherit;"><div style="padding:32px;text-align:center;color:var(--text3)">Loading...</div></div>
       </div>
     </div>
 
@@ -2024,18 +2025,16 @@ function loadConvStats() {
   const el = document.getElementById('conv-stats-content');
   const now = new Date();
   const monthName = now.toLocaleString('default', { month: 'long', year: 'numeric' });
-  const dashUrl = wabaId
-    ? `https://business.facebook.com/wa/manage/phone-numbers/?waba_id=${wabaId}`
-    : 'https://business.facebook.com/wa/manage/phone-numbers/';
+  const dashUrl = 'https://business.facebook.com/wa/manage/home/';
   el.innerHTML = `
     <div style="font-size:11px;color:var(--text3);margin-bottom:8px;">${monthName}</div>
     <div style="background:var(--bg3);border-radius:8px;padding:12px;margin-bottom:10px;">
       <div style="font-size:12px;color:var(--text2);margin-bottom:6px;">Free tier: <b style="color:var(--accent);">1,000 business-initiated/month</b></div>
-      <div style="font-size:11px;color:var(--text3);line-height:1.6;">Charges apply only after 1,000 msgs/month.<br>Est. rate: ~RM0.08u20130.15 per conversation.</div>
+      <div style="font-size:11px;color:var(--text3);line-height:1.6;">Charges apply only after 1,000 msgs/month.<br>Est. rate: ~RM0.08–0.15 per conversation.</div>
     </div>
     <a href="${dashUrl}" target="_blank" style="display:flex;align-items:center;gap:6px;background:var(--accent);color:#000;font-size:12px;font-weight:600;padding:8px 14px;border-radius:8px;text-decoration:none;justify-content:center;">
       <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
-      View Usage in Meta Dashboard
+      Open WhatsApp Manager
     </a>
   `;
 }
@@ -2442,16 +2441,37 @@ async function loadMessages(){
     if (clientId) opts.filter = {client_id:'eq.'+clientId};
     const data = await sb('message_logs', opts);
     const filtered = phone ? data.filter(m=>(m.customer_phone||m.from_number||'').includes(phone)) : data;
-    document.getElementById('messages-list').innerHTML=filtered.length?filtered.map(m=>`
+
+    if (!filtered.length) {
+      document.getElementById('messages-list').innerHTML='<div class="empty-state"><div class="empty-state-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-msg"/></svg></div><div class="empty-state-text">No messages found</div></div>';
+      return;
+    }
+
+    // Group by date
+    const groups = {};
+    filtered.forEach(m => {
+      const d = new Date(m.created_at);
+      const dateKey = d.toLocaleDateString('en-MY', {weekday:'short', day:'2-digit', month:'short', year:'numeric'});
+      if (!groups[dateKey]) groups[dateKey] = [];
+      groups[dateKey].push(m);
+    });
+
+    let html = '';
+    Object.keys(groups).forEach(dateKey => {
+      html += `<div class="log-date-group">${dateKey}</div>`;
+      html += groups[dateKey].map(m=>`
       <div class="log-entry">
-        <div class="log-time">${fmtDT(m.created_at)}</div>
-        <div style="flex:1">
+        <div class="log-time">${new Date(m.created_at).toLocaleTimeString('en-MY',{hour:'2-digit',minute:'2-digit'})}</div>
+        <div style="flex:1;min-width:0;">
           <div class="log-phone">${m.customer_phone||m.from_number||'—'}</div>
           <div class="log-msg">${m.message_in||m.customer_message||m.message||'—'}</div>
           ${m.message_out||m.ai_reply||m.bot_reply?`<div class="log-reply">Bot: ${m.message_out||m.ai_reply||m.bot_reply}</div>`:''}
         </div>
-        <span class="badge badge-grey" style="white-space:nowrap">${shortId(m.client_id||m.id)}</span>
-      </div>`).join(''):'<div class="empty-state"><div class="empty-state-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><use href="#ic-msg"/></svg></div><div class="empty-state-text">No messages found</div></div>';
+        <span class="badge badge-grey" style="white-space:nowrap;flex-shrink:0;">${shortId(m.client_id||m.id)}</span>
+      </div>`).join('');
+    });
+
+    document.getElementById('messages-list').innerHTML = html;
   }catch(e){document.getElementById('messages-list').innerHTML=`<div style="padding:24px;text-align:center;color:var(--danger)">Error: ${e.message}</div>`;}
 }
 
