@@ -145,7 +145,7 @@ input:checked+.toggle-slider::after{transform:translateX(18px);}
 /* FORM */
 .form-group{margin-bottom:16px;}
 .form-label{display:block;font-size:11px;font-weight:600;color:var(--text2);margin-bottom:6px;font-family:'Courier New',Courier,monospace;text-transform:uppercase;letter-spacing:.5px;}
-.form-input{width:100%;padding:9px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:13.5px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;outline:none;transition:border-color .2s;}
+.form-input{width:100%;padding:9px 12px;background:var(--bg3);border:1px solid var(--border2);border-radius:8px;color:var(--text);font-size:13.5px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;outline:none;transition:border-color .2s;min-width:0;box-sizing:border-box;overflow:hidden;text-overflow:ellipsis;}
 .form-input:focus{border-color:var(--accent);}
 select.form-input{cursor:pointer;}
 textarea.form-input{resize:vertical;}
@@ -821,11 +821,11 @@ textarea.form-input{resize:vertical;}
     </div>
 
     <!-- SETTINGS -->
-    <div class="page" id="page-settings">
+    <div class="page" id="page-settings" style="overflow-x:hidden;">
       <div class="section-header">
         <div><div class="section-title">Settings</div><div class="section-sub">Platform configuration</div></div>
       </div>
-      <div class="two-col">
+      <div>
         <div class="card">
           <div class="card-header"><span class="card-title">Supabase Connection</span></div>
           <div class="card-body" style="padding:20px">
@@ -880,7 +880,12 @@ textarea.form-input{resize:vertical;}
         <div class="card-body" style="padding:20px">
           <div class="form-group">
             <label class="form-label">Groq API Key</label>
-            <input class="form-input" type="password" id="groq-key-input" placeholder="gsk_..." style="font-family:'Courier New',Courier,monospace;">
+            <div style="position:relative;">
+              <input class="form-input" type="password" id="groq-key-input" placeholder="gsk_..." style="font-family:'Courier New',Courier,monospace;padding-right:38px;">
+              <button type="button" onclick="togglePwField('groq-key-input','groq-key-eye')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text3);display:flex;align-items:center;padding:4px;">
+                <svg id="groq-key-eye" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#ic-eye"/></svg>
+              </button>
+            </div>
             <div style="font-size:11px;color:var(--text3);margin-top:5px;">Used for AI Setup from PDF in Knowledge Base. Get a free key at <a href="https://console.groq.com" target="_blank" style="color:var(--accent)">console.groq.com</a>.</div>
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -895,7 +900,12 @@ textarea.form-input{resize:vertical;}
         <div class="card-body" style="padding:20px">
           <div class="form-group">
             <label class="form-label">Anthropic API Key</label>
-            <input class="form-input" type="password" id="haiku-key-input" placeholder="sk-ant-..." style="font-family:'Courier New',Courier,monospace;">
+            <div style="position:relative;">
+              <input class="form-input" type="password" id="haiku-key-input" placeholder="sk-ant-..." style="font-family:'Courier New',Courier,monospace;padding-right:38px;">
+              <button type="button" onclick="togglePwField('haiku-key-input','haiku-key-eye')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text3);display:flex;align-items:center;padding:4px;">
+                <svg id="haiku-key-eye" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#ic-eye"/></svg>
+              </button>
+            </div>
             <div style="font-size:11px;color:var(--text3);margin-top:5px;">Used when switching bot AI to Claude Haiku. Get your key at <a href="https://console.anthropic.com" target="_blank" style="color:var(--accent)">console.anthropic.com</a>. Stored locally only.</div>
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
@@ -905,6 +915,48 @@ textarea.form-input{resize:vertical;}
           <div id="haiku-key-status" style="margin-top:10px;font-size:12px;display:none;"></div>
         </div>
       </div>
+      <!-- AI PROVIDER SWITCHER -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">🤖 AI Provider</span>
+          <span id="ai-provider-badge" style="font-size:11px;font-family:'Courier New',Courier,monospace;padding:3px 8px;border-radius:20px;background:rgba(37,211,102,.12);color:var(--accent);border:1px solid rgba(37,211,102,.25);">Loading...</span>
+        </div>
+        <div class="card-body" style="padding:20px;display:flex;flex-direction:column;gap:16px;">
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Provider</label>
+            <select class="form-input" id="ai-provider-select" onchange="onAiProviderChange(this.value)" style="cursor:pointer;">
+              <option value="cerebras">Cerebras</option>
+              <option value="groq">Groq</option>
+              <option value="haiku">Claude Haiku</option>
+            </select>
+          </div>
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Endpoint</label>
+            <input class="form-input" id="ai-endpoint-input" type="text" style="font-family:'Courier New',Courier,monospace;font-size:12px;">
+          </div>
+          <div class="form-group" style="margin:0">
+            <label class="form-label">Model</label>
+            <input class="form-input" id="ai-model-input" type="text" style="font-family:'Courier New',Courier,monospace;font-size:12px;">
+          </div>
+          <div class="form-group" style="margin:0">
+            <label class="form-label">API Key</label>
+            <div style="position:relative;">
+              <input class="form-input" id="ai-apikey-input" type="password" placeholder="Paste API key..." style="font-family:'Courier New',Courier,monospace;font-size:12px;padding-right:38px;">
+              <button type="button" onclick="togglePwField('ai-apikey-input','ai-key-eye')" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--text3);display:flex;align-items:center;padding:4px;">
+                <svg id="ai-key-eye" width="15" height="15" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><use href="#ic-eye"/></svg>
+              </button>
+            </div>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <button class="topbar-btn btn-primary" onclick="saveAiProvider()">
+              <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" viewBox="0 0 24 24"><use href="#ic-check"/></svg>
+              Save & Switch
+            </button>
+            <div id="ai-provider-status" style="font-size:12px;display:none;"></div>
+          </div>
+        </div>
+      </div>
+
       <div class="card">
         <div class="card-header"><span class="card-title">Admin Settings</span></div>
         <div class="card-body" style="padding:20px" id="admin-settings-body">
@@ -914,8 +966,8 @@ textarea.form-input{resize:vertical;}
       <div class="card">
         <div class="card-header"><span class="card-title">Payment Reminders</span></div>
         <table class="data-table">
-          <thead><tr><th>Client ID</th><th>Due Date</th><th>Amount</th><th>Status</th><th>Sent At</th></tr></thead>
-          <tbody id="reminders-tbody"><tr class="loading-row"><td colspan="5">Loading...</td></tr></tbody>
+          <thead><tr><th>Client ID</th><th>Subscription</th><th>Type</th><th>Sent At</th></tr></thead>
+          <tbody id="reminders-tbody"><tr class="loading-row"><td colspan="4">Loading...</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -2571,27 +2623,104 @@ function clearHaikuKey() {
   setTimeout(()=>st.style.display='none', 2000);
 }
 
+// AI PROVIDER SWITCHER
+const AI_PRESETS = {
+  cerebras: {
+    endpoint: 'https://api.cerebras.ai/v1/chat/completions',
+    model: 'gpt-oss-120b'
+  },
+  groq: {
+    endpoint: 'https://api.groq.com/openai/v1/chat/completions',
+    model: 'llama-3.3-70b-versatile'
+  },
+  haiku: {
+    endpoint: 'https://api.anthropic.com/v1/messages',
+    model: 'claude-haiku-4-5-20251001'
+  }
+};
+
+function onAiProviderChange(provider) {
+  const preset = AI_PRESETS[provider];
+  if (!preset) return;
+  document.getElementById('ai-endpoint-input').value = preset.endpoint;
+  document.getElementById('ai-model-input').value = preset.model;
+  // Pre-fill key from localStorage if available
+  const keyMap = { groq: 'wabot_groq_key', haiku: 'wabot_haiku_key', cerebras: 'wabot_cerebras_key' };
+  const saved = localStorage.getItem(keyMap[provider] || '');
+  document.getElementById('ai-apikey-input').value = saved || '';
+}
+
+async function saveAiProvider() {
+  const provider = document.getElementById('ai-provider-select').value;
+  const endpoint = document.getElementById('ai-endpoint-input').value.trim();
+  const model = document.getElementById('ai-model-input').value.trim();
+  const apiKey = document.getElementById('ai-apikey-input').value.trim();
+  const st = document.getElementById('ai-provider-status');
+  if (!endpoint || !model || !apiKey) {
+    st.style.display='block'; st.style.color='var(--danger)'; st.textContent='All fields required.'; return;
+  }
+  st.style.display='block'; st.style.color='var(--text3)'; st.textContent='Saving...';
+  try {
+    const rows = await sb('admin_settings', { select: 'id,key' });
+    const idMap = {};
+    rows.forEach(r => idMap[r.key] = r.id);
+    const updates = { ai_provider: provider, ai_endpoint: endpoint, ai_model: model, ai_api_key: apiKey };
+    for (const [key, value] of Object.entries(updates)) {
+      if (idMap[key]) {
+        await sbPatch('admin_settings', idMap[key], { value, updated_at: new Date().toISOString() });
+      } else {
+        await sb('admin_settings', { method: 'POST', body: { key, value, description: 'AI provider setting' } });
+      }
+    }
+    // Save key to localStorage too
+    const keyMap = { groq: 'wabot_groq_key', haiku: 'wabot_haiku_key', cerebras: 'wabot_cerebras_key' };
+    if (keyMap[provider]) localStorage.setItem(keyMap[provider], apiKey);
+    const badge = document.getElementById('ai-provider-badge');
+    if (badge) badge.textContent = provider.toUpperCase();
+    st.style.color='var(--accent)'; st.textContent='✓ Saved — bot will use ' + provider.toUpperCase() + ' on next message.';
+    setTimeout(()=>st.style.display='none', 4000);
+  } catch(e) { st.style.color='var(--danger)'; st.textContent='Failed: '+e.message; }
+}
+
 async function loadSettings(){
   // Pre-fill Groq key if saved
   const saved = localStorage.getItem('wabot_groq_key');
   if (saved && document.getElementById('groq-key-input')) document.getElementById('groq-key-input').value = saved;
   const savedHaiku = localStorage.getItem('wabot_haiku_key');
   if (savedHaiku && document.getElementById('haiku-key-input')) document.getElementById('haiku-key-input').value = savedHaiku;
+  const body=document.getElementById('admin-settings-body');
+  const remindersTbody=document.getElementById('reminders-tbody');
   try{
-    const [settings,reminders]=await Promise.all([
-      sb('admin_settings',{select:'*'}),
-      sb('payment_reminders',{select:'*',order:'due_date.asc'})
-    ]);
-    const body=document.getElementById('admin-settings-body');
-    if(body) body.innerHTML=settings.length?settings.map(s=>`<div class="form-group"><label class="form-label">${s.key||s.setting_key||'Setting'}</label><input class="form-input" type="text" value="${s.value||s.setting_value||''}" onchange="updateSetting('${s.id}',this.value)"></div>`).join(''):'<div style="color:var(--text3);font-size:13px">No settings configured yet</div>';
-    document.getElementById('reminders-tbody').innerHTML=reminders.length?reminders.map(r=>`<tr>
+    const settings = await sb('admin_settings',{select:'*'});
+    const aiKeys = ['ai_provider','ai_endpoint','ai_model','ai_api_key'];
+    // Populate AI Provider card
+    const s = {};
+    settings.filter(r => aiKeys.includes(r.key)).forEach(r => s[r.key] = r.value);
+    const provider = s['ai_provider'] || 'cerebras';
+    const sel = document.getElementById('ai-provider-select');
+    if (sel) sel.value = provider;
+    const badge = document.getElementById('ai-provider-badge');
+    if (badge) badge.textContent = provider.toUpperCase();
+    if (document.getElementById('ai-endpoint-input')) document.getElementById('ai-endpoint-input').value = s['ai_endpoint'] || AI_PRESETS[provider]?.endpoint || '';
+    if (document.getElementById('ai-model-input')) document.getElementById('ai-model-input').value = s['ai_model'] || AI_PRESETS[provider]?.model || '';
+    if (document.getElementById('ai-apikey-input')) document.getElementById('ai-apikey-input').value = s['ai_api_key'] || '';
+    // Populate Admin Settings card (exclude AI rows)
+    const filteredSettings = settings.filter(s => !aiKeys.includes(s.key));
+    if(body) body.innerHTML=filteredSettings.length?filteredSettings.map(s=>`<div class="form-group"><label class="form-label">${s.key||s.setting_key||'Setting'}</label><input class="form-input" type="text" value="${s.value||s.setting_value||''}" onchange="updateSetting('${s.id}',this.value)"></div>`).join(''):'<div style="color:var(--text3);font-size:13px">No settings configured yet</div>';
+  }catch(e){
+    if(body) body.innerHTML=`<div style="color:var(--danger);font-size:13px">Error: ${e.message}</div>`;
+  }
+  try{
+    const reminders = await sb('payment_reminders',{select:'*',order:'sent_at.desc'});
+    if(remindersTbody) remindersTbody.innerHTML=reminders.length?reminders.map(r=>`<tr>
       <td style="font-family:'Courier New',Courier,monospace;font-size:11px">${shortId(r.client_id)}</td>
-      <td style="color:var(--text3);font-size:12px">${fmtDate(r.due_date)}</td>
-      <td><b>RM ${(r.amount||0).toFixed(2)}</b></td>
-      <td>${r.is_sent?'<span class="badge badge-green">SENT</span>':'<span class="badge badge-yellow">PENDING</span>'}</td>
+      <td style="font-family:'Courier New',Courier,monospace;font-size:11px">${shortId(r.subscription_id)}</td>
+      <td><span class="badge badge-blue">${(r.reminder_type||'—').toUpperCase()}</span></td>
       <td style="color:var(--text3);font-size:12px">${fmtDT(r.sent_at)}</td>
-    </tr>`).join(''):'<tr class="loading-row"><td colspan="5">No payment reminders</td></tr>';
-  }catch(e){console.error('Settings:',e);}
+    </tr>`).join(''):'<tr class="loading-row"><td colspan="4">No payment reminders yet</td></tr>';
+  }catch(e){
+    if(remindersTbody) remindersTbody.innerHTML=`<tr class="loading-row"><td colspan="4" style="color:var(--danger)">Error: ${e.message}</td></tr>`;
+  }
 }
 
 async function updateSetting(id,value){try{await sbPatch('admin_settings',id,{value});toast('Updated','success');}catch(e){toast('Failed: '+e.message,'error');}}
