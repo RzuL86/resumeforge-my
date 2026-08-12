@@ -2417,7 +2417,9 @@ function handlePhotoUpload(inp){
       // Center-crop to a square first — html2canvas doesn't reliably support
       // object-fit:cover, so a non-square source can render squished/warped
       // in the exported PDF. Cropping here removes that dependency entirely.
-      const MAX = 500;
+      // 800px gives enough headroom for large photo-header layouts on
+      // high-DPI phone screens (~3x device pixel ratio).
+      const MAX = 800;
       const side = Math.min(img.width, img.height);
       const sx = (img.width - side) / 2;
       const sy = (img.height - side) / 2;
